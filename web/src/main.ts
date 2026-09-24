@@ -28,6 +28,9 @@ lively.install();
 const params = new URLSearchParams(location.search);
 const frozenTime = params.has("t") ? Number(params.get("t")) : null;
 const demo = params.get("demo");
+const bootFreeze = params.has("boot") ? Number(params.get("boot")) : null;
+// Deterministic capture (recordings): no rAF loop; frames are stepped by 1/30 s.
+const captureMode = params.get("capture") === "1";
 
 // ─── settings ────────────────────────────────────────────────────────────────
 const settings: Settings = { ...DEFAULT_SETTINGS };
@@ -180,7 +183,7 @@ function computeTarget(cameraMoving: boolean): number {
 }
 
 function start() {
-  if (running || paused || core.contextLost) return;
+  if (running || paused || core.contextLost || captureMode) return;
   running = true;
   lastFrame = performance.now();
   nextDeadline = lastFrame;
@@ -203,12 +206,16 @@ function loop(now: number) {
   if (now - nextDeadline > interval) nextDeadline = now + interval;
 
   const frameInterval = now - lastFrame;
-  const dt = Math.min(0.1, frameInterval / 1000);
   lastFrame = now;
+  frameStep(Math.min(0.1, frameInterval / 1000), frameInterval);
+}
+
+/** One simulation + render step (also driven directly by ?capture=1). */
+function frameStep(dt: number, frameInterval: number) {
   const cpu0 = performance.now();
 
   elapsed += dt;
-  bootT += dt;
+  bootT = bootFreeze ?? bootT + dt;
   updateBoot();
 
   // drive: ease toward the current state's targets
@@ -258,8 +265,8 @@ function loop(now: number) {
 // ─── boot sequence ───────────────────────────────────────────────────────────
 let bootBurstDone = false;
 function updateBoot() {
-  if (bootT > BOOT_S + 0.1) return;
-  const b = frozenTime !== null && demo !== "boot" ? 99 : bootT;
+  if (bootT > BOOT_S + 0.1 && bootFreeze === null) return;
+  const b = frozenTime !== null && bootFreeze === null ? 99 : bootT;
   orb.reveal.rings.value = smooth((b - 0.2) / 0.5);
   orb.reveal.outer.value = smooth((b - 0.3) / 0.7);
   orb.reveal.inner.value = smooth((b - 0.5) / 0.6);
@@ -342,6 +349,7 @@ if (demo === "drag") setTimeout(() => { sm.go("DRAG"); core.camera.position.set(
   orb, core, sm, ring, helper, input, settings, perf, auto, gpuTimer,
   get targetFps() { return targetFps; },
   get running() { return running; },
+  captureStep(n = 1) { for (let i = 0; i < n; i++) frameStep(1 / 30, 1000 / 30); },
   get fps() { return fps; },
   home: CAMERA_HOME,
 };

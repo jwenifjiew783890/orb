@@ -11,7 +11,7 @@
        - starts at logon, runs hidden, as you (limited rights)
        - restarts automatically if it exits with an error (every 1 min)
        - watchdog trigger every 5 minutes: if the helper crashed it is started
-         again; if it is running, the new start is ignored (no duplicates —
+         again; if it is running, the new start is ignored (no duplicates -
          the helper also holds a single-instance mutex)
   4. Starts the helper and checks that it answers on 127.0.0.1.
 
@@ -94,7 +94,7 @@ function Find-WallpaperDirs {
       }
     }
   }
-  $dirs + $WallpaperDir | Select-Object -Unique
+  @($dirs) + @($WallpaperDir) | Where-Object { $_ } | Select-Object -Unique
 }
 
 $targets = @(Find-WallpaperDirs)

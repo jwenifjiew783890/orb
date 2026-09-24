@@ -1,0 +1,37 @@
+{
+  "when": "2026-09-24T07:00:54.991Z",
+  "viewport": "1280x720",
+  "quality": "medium",
+  "secondsPerScenario": 15,
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "results": [
+    {
+      "scenario": "idle",
+      "fps": 4.1,
+      "mainThreadCpuPct": 0.47,
+      "scriptCpuPct": 0.28,
+      "cpuMsPerFrame": 1.15,
+      "jsHeapMB": 4,
+      "targetFps": 30
+    },
+    {
+      "scenario": "interaction",
+      "fps": 4.2,
+      "mainThreadCpuPct": 0.65,
+      "scriptCpuPct": 0.27,
+      "cpuMsPerFrame": 1.54,
+      "jsHeapMB": 4.3,
+      "targetFps": 60
+    },
+    {
+      "scenario": "paused",
+      "fps": 0,
+      "mainThreadCpuPct": 0.09,
+      "scriptCpuPct": 0,
+      "cpuMsPerFrame": 0,
+      "jsHeapMB": 4.3,
+      "targetFps": 60
+    }
+  ],
+  "debugOverlay": "VISION DEBUG\nstate        IDLE\nfps          13.8 (target 60)\nframe (cpu)  0.78 ms\nframe (gpu)  no timer ext\ndraw calls   24 total · 10 orb\nprimitives   62347 lines · 3720 points · 4 tris\ndpr          1.00\nfilaments    2600 outer · 900 inner\nparticles    3720\nrenderer     WebGL2 · ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0\nquality      medium · auto step 0\nauto         reset\nhelper       unauthorized\njs heap      11.3 / 12.1 MB\ngen          147 ms"
+}

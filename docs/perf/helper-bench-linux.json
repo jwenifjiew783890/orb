@@ -1,0 +1,40 @@
+{
+  "when": "2026-09-24T07:04:32.982Z",
+  "os": "linux",
+  "binary": "linux/amd64 build of helper/service",
+  "startupMs": {
+    "runs": [
+      2,
+      57,
+      59,
+      63,
+      83
+    ],
+    "median": 59
+  },
+  "rssIdleAfterStartMB": 6.5,
+  "peakRssMB": 8.5,
+  "windows": [
+    {
+      "label": "idle (no requests → collector suspended after 20 s)",
+      "seconds": 40,
+      "requests": 0,
+      "cpuPctOfOneCore": 0.05,
+      "rssMB": 6.8
+    },
+    {
+      "label": "wallpaper polling (1 req / 1.5 s)",
+      "seconds": 60,
+      "requests": 39,
+      "cpuPctOfOneCore": 0.067,
+      "rssMB": 8.3
+    },
+    {
+      "label": "stress polling (10 req / s)",
+      "seconds": 30,
+      "requests": 299,
+      "cpuPctOfOneCore": 0.267,
+      "rssMB": 8.5
+    }
+  ]
+}

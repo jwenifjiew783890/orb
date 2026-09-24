@@ -21,7 +21,7 @@ Get-Process -Name 'vision-helper' -ErrorAction SilentlyContinue |
   Where-Object { $_.Path -eq $Exe } | Stop-Process -Force
 Write-Host '  helper stopped'
 
-# Unpair wallpaper copies (token.js → empty stub)
+# Unpair wallpaper copies (token.js -> empty stub)
 if (Test-Path $ConfigPath) {
   $dirs = @()
   $repoWp = Join-Path (Split-Path -Parent $HelperDir) 'wallpaper'
