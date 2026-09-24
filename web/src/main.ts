@@ -298,10 +298,12 @@ lively.onPause((p) => { livelyPaused = p; syncPause(); });
 // ─── context loss ────────────────────────────────────────────────────────────
 function onContextLost() {
   stop();
+  gpuTimer.enabled = false;
   perf.contextLosses++;
 }
 function onContextRestored() {
   gpuTimer.onContextRestored();
+  gpuTimer.enabled = settings.debugOverlay || settings.autoQuality;
   orb.setPixelScale(core.bufferHeight, core.camera.fov);
   perf.contextRestores++;
   if (!paused) start();

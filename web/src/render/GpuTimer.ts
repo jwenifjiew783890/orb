@@ -7,7 +7,7 @@ interface TimerExt { TIME_ELAPSED_EXT: number; GPU_DISJOINT_EXT: number }
 
 export class GpuTimer {
   private readonly gl: WebGL2RenderingContext;
-  private readonly ext: TimerExt | null;
+  private ext: TimerExt | null;
   private pending: WebGLQuery[] = [];
   private active: WebGLQuery | null = null;
   private free: WebGLQuery[] = [];
@@ -62,6 +62,8 @@ export class GpuTimer {
 
   /** After context loss all query objects are invalid. */
   onContextRestored() {
+    // extensions must be re-enabled on a restored context
+    this.ext = (this.gl.getExtension("EXT_disjoint_timer_query_webgl2") as TimerExt | null) ?? null;
     this.pending = [];
     this.free = [];
     this.active = null;

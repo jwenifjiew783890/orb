@@ -20,9 +20,9 @@ export class RenderCore {
   readonly renderer: THREE.WebGLRenderer;
   readonly scene = new THREE.Scene();
   readonly camera: THREE.PerspectiveCamera;
-  readonly composer: EffectComposer;
-  readonly bloom: ScaledBloomPass;
-  readonly final: ShaderPass;
+  composer!: EffectComposer;
+  bloom!: ScaledBloomPass;
+  final!: ShaderPass;
   readonly canvas: HTMLCanvasElement;
   readonly gpuName: string;
   readonly isWebGL2: boolean;
@@ -62,14 +62,7 @@ export class RenderCore {
     this.camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
     this.camera.position.copy(CAMERA_HOME);
 
-    this.composer = new EffectComposer(this.renderer);
-    this.composer.addPass(new RenderPass(this.scene, this.camera));
-    this.bloom = new ScaledBloomPass(new THREE.Vector2(256, 256), 0.85, 0.35, 0.42);
-    this.composer.addPass(this.bloom);
-    const fs = { ...finalShader, uniforms: THREE.UniformsUtils.clone(finalShader.uniforms) as Record<string, THREE.IUniform> };
-    fs.uniforms.uRes.value = new THREE.Vector2(1, 1);
-    this.final = new ShaderPass(fs);
-    this.composer.addPass(this.final);
+    this.buildComposer();
 
     this.canvas.addEventListener("webglcontextlost", (e) => {
       e.preventDefault(); // allow restoration
@@ -78,11 +71,31 @@ export class RenderCore {
     });
     this.canvas.addEventListener("webglcontextrestored", () => {
       this.contextLost = false;
-      // three.js re-initialises GL state and lazily re-uploads every geometry,
-      // texture and render target on the next render — nothing to rebuild here.
+      // three.js re-initialises GL state and lazily re-uploads geometries,
+      // textures and materials on the next render. The post-processing render
+      // targets are rebuilt instead of reused: their old dispose listeners
+      // belong to the lost context and would try to delete dead GL objects.
+      this.buildComposer();
       this.resize();
       onRestored();
     });
+  }
+
+  private buildComposer() {
+    const prev = this.bloom ? { strength: this.bloom.strength, scale: this.bloom.scale, ca: this.final.uniforms.uCA.value as number } : null;
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    this.bloom = new ScaledBloomPass(new THREE.Vector2(256, 256), 0.85, 0.35, 0.42);
+    this.composer.addPass(this.bloom);
+    const fs = { ...finalShader, uniforms: THREE.UniformsUtils.clone(finalShader.uniforms) as Record<string, THREE.IUniform> };
+    fs.uniforms.uRes.value = new THREE.Vector2(1, 1);
+    this.final = new ShaderPass(fs);
+    this.composer.addPass(this.final);
+    if (prev) {
+      this.bloom.strength = prev.strength;
+      this.bloom.scale = prev.scale;
+      this.final.uniforms.uCA.value = prev.ca;
+    }
   }
 
   setBackground(hex: string) {
