@@ -2,3 +2,7 @@ node_modules/
 helper/bin/*.tmp
 *.log
 /tests/**/out/
+tests/out/
+helper/config/config.json
+helper/config/*.tmp
+helper/config/helper.log

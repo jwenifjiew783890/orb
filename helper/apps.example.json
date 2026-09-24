@@ -1,0 +1,47 @@
+{
+  "apps": [
+    {
+      "id": "chrome",
+      "label": "Chrome",
+      "icon": null,
+      "exe": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "hotkey": null
+    },
+    {
+      "id": "explorer",
+      "label": "Files",
+      "icon": null,
+      "exe": "%WINDIR%\\explorer.exe",
+      "hotkey": null
+    },
+    {
+      "id": "notepad",
+      "label": "Notepad",
+      "icon": null,
+      "exe": "%WINDIR%\\System32\\notepad.exe",
+      "hotkey": null
+    },
+    {
+      "id": "calculator",
+      "label": "Calculator",
+      "icon": null,
+      "exe": "%WINDIR%\\System32\\calc.exe",
+      "hotkey": null
+    },
+    {
+      "id": "settings",
+      "label": "Settings",
+      "icon": null,
+      "exe": "%WINDIR%\\explorer.exe",
+      "args": ["ms-settings:"],
+      "hotkey": null
+    },
+    {
+      "id": "terminal",
+      "label": "Terminal",
+      "icon": null,
+      "exe": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\wt.exe",
+      "hotkey": null
+    }
+  ]
+}
