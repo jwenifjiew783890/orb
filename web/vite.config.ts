@@ -1,5 +1,8 @@
 import { defineConfig, type Plugin } from "vite";
-import { resolve } from "node:path";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
  * Lively's WebView2 player opens wallpapers from disk (file://). Chromium refuses
@@ -36,6 +39,7 @@ export default defineConfig(({ mode }) => {
       modulePreload: false,
       cssCodeSplit: false,
       sourcemap: false,
+      chunkSizeWarningLimit: 4000,
       rollupOptions: {
         output: {
           format: "iife",

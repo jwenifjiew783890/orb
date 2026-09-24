@@ -1,0 +1,16 @@
+{
+  "theme": { "type": "dropdown", "value": 0, "text": "Theme", "items": ["Gold", "Arc Blue", "Crimson", "Custom"] },
+  "customColor": { "type": "color", "value": "#7CFFB2", "text": "Custom colour (Theme = Custom)" },
+  "rotationSpeed": { "type": "slider", "value": 100, "min": 0, "max": 200, "step": 5, "text": "Rotation speed %" },
+  "bloomStrength": { "type": "slider", "value": 100, "min": 0, "max": 200, "step": 5, "text": "Bloom strength %" },
+  "particleDensity": { "type": "slider", "value": 100, "min": 25, "max": 150, "step": 5, "text": "Particle density %" },
+  "quality": { "type": "dropdown", "value": 1, "text": "Quality", "items": ["Low", "Medium", "High"] },
+  "autoQuality": { "type": "checkbox", "value": true, "text": "Auto-reduce quality if the PC can't keep up" },
+  "audioReactive": { "type": "checkbox", "value": false, "text": "Audio reactive" },
+  "hudStats": { "type": "checkbox", "value": true, "text": "HUD stats (needs VISION Helper)" },
+  "userName": { "type": "textbox", "value": "Muaz", "text": "Name for greeting" },
+  "debugOverlay": { "type": "checkbox", "value": false, "text": "Debug overlay" },
+  "helperPort": { "type": "textbox", "value": "47821", "text": "Helper port (advanced)" },
+  "helperToken": { "type": "textbox", "value": "", "text": "Helper token (only if auto-pairing failed)" },
+  "about": { "type": "label", "value": "VISION Orb 1.0 · orb rendering derived from ultron-by-sagar-builds by Sagar Tamang (MIT). See README." }
+}
