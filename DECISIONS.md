@@ -397,7 +397,29 @@ resume, and the centre pixel is lit again. There's no page reload and no warning
 setting including audio, and asserts **0 calls**. If gestures are added later, they belong
 in a separately loaded, opt-in script so the base wallpaper stays lightweight.
 
-## 14. What was kept from the Sagar orb, and what was replaced
+## 14. Lively audio feed: off by default
+
+**Choice:** Lively sends system audio to a wallpaper (`livelyAudioListener`, 128 bins at
+roughly the display rate) only if `LivelyInfo.json` declares `--audio true`. The feed
+can't be switched at runtime.
+
+**Alternatives:**
+
+- Always declare `--audio`, so the Customise toggle works out of the box
+- Leave it undeclared, and provide a one-click script that adds it
+
+**Decision:** leave it undeclared (`"Arguments": "--pause-event true"`) and provide
+`tools/windows/enable-audio.ps1` (and `-Disable`). If *Audio reactive* is switched on
+without the feed, a HUD hint appears after 4 s.
+
+**Reason:** with `--audio`, Lively captures loopback audio, runs an FFT and calls into
+the page about 60 times per second all day, even when audio-reactive is off. That's a
+permanent cost against the ≤ 3% idle CPU target for a feature that's off by default.
+
+**Benchmark:** **PENDING** on Windows. Run `perf-sample.ps1 -Label idle` with and without
+the feed enabled. If the difference is negligible, declare `--audio` by default.
+
+## 15. What was kept from the Sagar orb, and what was replaced
 
 | Sagar orb (`lib/orbScene.ts`) | VISION Orb |
 |---|---|

@@ -132,6 +132,14 @@ function applyAll(prev?: Settings) {
   helper.setStatsEnabled(settings.hudStats);
   helper.configure({ port: settings.helperPort, token: settings.helperToken || injected?.token || "" });
   debug.setEnabled(settings.debugOverlay);
+  if (settings.audioReactive && (!prev || !prev.audioReactive)) {
+    // Lively only sends audio when the wallpaper declares "--audio"; tell the
+    // user once if the feed isn't arriving.
+    const seen = audioFrames;
+    window.setTimeout(() => {
+      if (settings.audioReactive && audioFrames === seen) hud.showToast("AUDIO FEED OFF · RUN tools\\windows\\enable-audio.ps1", 5000);
+    }, 4000);
+  }
   gpuTimer.enabled = settings.debugOverlay || settings.autoQuality;
   if (!settings.audioReactive) audioLevel = 0;
 }
@@ -144,7 +152,9 @@ lively.onProperties((patch) => {
 
 // ─── audio (only when enabled; the webcam is never touched) ─────────────────
 let audioLevel = 0;
+let audioFrames = 0;
 lively.onAudio((bins) => {
+  audioFrames++;
   if (!settings.audioReactive || paused) return;
   let s = 0;
   const n = Math.min(24, bins.length);

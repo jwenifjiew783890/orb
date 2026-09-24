@@ -174,7 +174,7 @@ Status key:
 - ✅ No console warnings
 - ✅ Context recovery
 - ✅ Helper crash recovery
-- ⬜ 24-hour soak (a 10- and 20-minute container soak was run)
+- ⬜ 24-hour soak (10- and 20-minute container soaks: heap plateaus at ~3.7 MB, helper ~8.8 MB, no leak found in a heap diff)
 - ⬜ Reboot
 
 **Settings**

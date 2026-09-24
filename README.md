@@ -117,7 +117,8 @@ See **[PERF_REPORT.md](PERF_REPORT.md)** for all numbers and how each was measur
 - **Rate limits** apply in general, on launch, and on failed authentication. Error
   replies carry only a short code, never a path or the token.
 - **No camera.** The bundle contains no camera or microphone code. Audio-reactive mode
-  uses Lively's system-audio feed and is off by default.
+  uses Lively's system-audio (loopback) feed. It's off by default; enable it once with
+  `tools\windows\enable-audio.ps1`.
 
 Results: 20 Go unit tests, 20 black-box tests against the real binary over HTTP, and the
 full §53 security matrix. See [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md).
@@ -174,7 +175,9 @@ Useful URL parameters when opening `wallpaper/index.html` in a browser:
 Repository layout:
 
 ```
-wallpaper/   built Lively wallpaper (index.html, js/, LivelyInfo.json, LivelyProperties.json, token.js)
+wallpaper/   built Lively wallpaper (index.html, js/vision.js, LivelyInfo.json, LivelyProperties.json,
+             token.js, preview.gif, thumbnail.jpg). Shaders and assets are inlined into js/vision.js
+             because file:// pages can't fetch separate files (DECISIONS §0).
 web/         wallpaper source (Vite + TypeScript + three.js; shaders in src/shaders and src/orb/shaders.ts)
 helper/      service/ (Go source) · bin/ · apps.json · icons/ · config/ · install/uninstall scripts
 tests/       helper-security/ · launch/ · integration/ · perf/ · run-all.sh
@@ -189,7 +192,7 @@ docs/        screenshots, media, perf JSON, TEST_RESULTS, WINDOWS_TEST_PLAN
   `lib/orbScene.ts`. It carries over the layered-shell idea, drifting code text (now GPU
   "data glyphs"), dust, scan rings (now orbit rings), bloom plus chromatic aberration,
   and damped orbit controls. The rendering was rebuilt around a new neural filament
-  system. [DECISIONS.md §14](DECISIONS.md) lists what was kept and what was replaced.
+  system. [DECISIONS.md §15](DECISIONS.md) lists what was kept and what was replaced.
 - **4D simplex noise:** [webgl-noise](https://github.com/ashima/webgl-noise) by Ashima
   Arts and Stefan Gustavson, MIT.
 - **Libraries:** [three.js](https://threejs.org) (MIT), `golang.org/x/sys` (BSD-3).

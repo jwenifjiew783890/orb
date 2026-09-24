@@ -107,7 +107,33 @@ Source: `tests/perf/mini-soak.mjs`, which runs the wallpaper plus the real helpe
 **10 minutes** and samples every 30 s after a forced GC. Every other sample exercises
 hover and opening/closing the app ring. Raw data is in `docs/perf/mini-soak-10min.json`.
 
-SOAK_TABLE_PLACEHOLDER
+Two runs: 10 minutes sampled every 30 s, and 20 minutes sampled every 60 s. Raw data is in
+`docs/perf/mini-soak-10min.json` and `docs/perf/mini-soak-20min.json`.
+
+| Time (20-min run) | JS heap after GC | DOM nodes | JS listeners | Helper RSS | Link |
+|---|---|---|---|---|---|
+| 1 min | 3.44 MB | 132* | 19* | 8.3 MB | online |
+| 5 min | 3.61 MB | 132* | 19* | 8.8 MB | online |
+| 10 min | 3.65 MB | 126 | 17 | 8.8 MB | online |
+| 15 min | 3.68 MB | 126 | 17 | 8.8 MB | online |
+| 19 min | 3.69 MB | 126 | 17 | 8.8 MB | online (every sample) |
+
+\* Sampled while the app ring was open. Its 6 nodes and 2 listeners are removed on close.
+
+**Heap trend by 5-minute window:** +0.17 → +0.04 → +0.03 → +0.01 MB. That's a decaying
+warm-up curve, not a linear leak.
+
+**Where the growth comes from.** A heap-snapshot diff over 4 idle minutes (+212 KB)
+attributes it to V8 internals and bounded browser buffers:
+
+- ~190 KB of JIT code objects (optimised code for `update`, `frame`, `renderClock`, …)
+- 23 KB of `PerformanceLongAnimationFrameTiming` entries. These are recorded because
+  SwiftShader frames exceed 50 ms, and Chromium caps that buffer.
+- the rest is V8 `WeakArrayList`s
+
+**No application objects grew:** no three.js objects, arrays, closures or DOM.
+
+Helper RSS stayed between 8.3 and 9.1 MB with no trend.
 
 **This is not the 24-hour soak.** The 24-hour soak (one sample per 10 minutes) must run
 on Windows:
@@ -135,14 +161,21 @@ Procedure: `docs/WINDOWS_TEST_PLAN.md`. Paste the `perf-sample.ps1` summaries he
 | Idle | Low | PENDING | PENDING | PENDING | PENDING | PENDING | | |
 | Idle | High | PENDING | PENDING | PENDING | PENDING | PENDING | | |
 
-### 5.3 Game test
+### 5.3 Lively audio feed cost (decides the `--audio` default, DECISIONS §14)
+
+| Idle, Medium | Wallpaper CPU % | Lively process CPU % |
+|---|---|---|
+| Without `--audio` (default) | PENDING | PENDING |
+| With `--audio` (`enable-audio.ps1`) | PENDING | PENDING |
+
+### 5.4 Game test
 
 | Run | Avg FPS | 1% low | Frame-time SD | Wallpaper CPU/GPU during game |
 |---|---|---|---|---|
 | Lively closed (×3) | PENDING | | | — |
 | VISION running (×3) | PENDING | | | PENDING |
 
-### 5.4 24-hour soak
+### 5.5 24-hour soak
 
 | | Start | End | Trend | Link offline samples |
 |---|---|---|---|---|

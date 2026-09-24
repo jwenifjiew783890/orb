@@ -128,7 +128,7 @@ In Lively, click the **VISION Orb** tile's **⋯ → Customise**:
 | **Rotation speed**, **Bloom strength**, **Particle density** | Sliders |
 | **Quality** | Low / Medium / High. Use Low on laptops or older graphics cards. |
 | **Auto-reduce quality** | On by default. VISION steps quality down if your PC can't keep up. |
-| **Audio reactive** | Makes the orb respond gently to music playing on your PC. Off by default. It never uses a microphone or webcam. |
+| **Audio reactive** | Makes the orb respond gently to music playing on your PC. Off by default. It never uses a microphone or webcam. **One-time step:** right-click `tools\windows\enable-audio.ps1` → Run with PowerShell, then reload the wallpaper. This turns on Lively's audio feed, which VISION leaves off by default because it costs a little CPU all the time. Undo it with `enable-audio.ps1 -Disable`. |
 | **HUD stats** | Shows or hides the gauges at the bottom |
 | **Name for greeting** | Changes "Good morning, …" |
 | **Debug overlay** | Shows technical numbers (FPS, draw calls). For troubleshooting only. |

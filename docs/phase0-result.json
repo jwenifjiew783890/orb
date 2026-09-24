@@ -55,7 +55,7 @@
       "anim": {
         "label": "Animation loop",
         "status": "ok",
-        "detail": "12.4 fps"
+        "detail": "10.8 fps"
       },
       "ctx": {
         "label": "WebGL context",
@@ -77,15 +77,15 @@
     "bench": null,
     "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
     "webgpu": "no adapter",
-    "frames": 57,
-    "fps": 12.378594553418388,
+    "frames": 55,
+    "fps": 10.81931739942952,
     "paused": false
   },
   "pause": {
-    "framesBefore": 33,
-    "framesDuringPause": 33,
-    "framesAfterPause": 33,
-    "framesResumed": 47,
+    "framesBefore": 34,
+    "framesDuringPause": 34,
+    "framesAfterPause": 34,
+    "framesResumed": 48,
     "stoppedWhilePaused": true,
     "resumed": true
   },

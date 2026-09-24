@@ -6,7 +6,7 @@
   "particleDensity": { "type": "slider", "value": 100, "min": 25, "max": 150, "step": 5, "text": "Particle density %" },
   "quality": { "type": "dropdown", "value": 1, "text": "Quality", "items": ["Low", "Medium", "High"] },
   "autoQuality": { "type": "checkbox", "value": true, "text": "Auto-reduce quality if the PC can't keep up" },
-  "audioReactive": { "type": "checkbox", "value": false, "text": "Audio reactive" },
+  "audioReactive": { "type": "checkbox", "value": false, "text": "Audio reactive (run tools\\windows\\enable-audio.ps1 once)" },
   "hudStats": { "type": "checkbox", "value": true, "text": "HUD stats (needs VISION Helper)" },
   "userName": { "type": "textbox", "value": "Muaz", "text": "Name for greeting" },
   "debugOverlay": { "type": "checkbox", "value": false, "text": "Debug overlay" },

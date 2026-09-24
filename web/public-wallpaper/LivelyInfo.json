@@ -9,5 +9,5 @@
   "FileName": "index.html",
   "Preview": "preview.gif",
   "Thumbnail": "thumbnail.jpg",
-  "Arguments": "--pause-event true --audio true"
+  "Arguments": "--pause-event true"
 }
