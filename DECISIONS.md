@@ -266,6 +266,9 @@ no per-strand JS and no per-frame allocation (§9).
 
 ## 7. Procedural and "4D" techniques evaluated
 
+Exact call sites, per-frame invocation counts, the NVIDIA measurement procedure and the
+ranked list of further techniques are in [docs/PROCEDURAL_NOISE.md](docs/PROCEDURAL_NOISE.md).
+
 | Technique | Used? | Where / why |
 |---|---|---|
 | 4D simplex noise (xyz + time) | **Yes** | Filament drift. Sampling time as the 4th dimension makes the network *evolve* rather than scroll through a static 3D field. Ashima/Gustavson webgl-noise (MIT). |
