@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>VISION Phase 0 Probe</title>
+<style>
+  html,body{margin:0;height:100%;background:#050302;overflow:hidden;color:#ffd79a;font:13px/1.45 Consolas,"Cascadia Mono",monospace}
+  canvas{display:block}
+  #panel{position:fixed;left:24px;top:24px;min-width:420px;background:rgba(10,6,2,.78);border:1px solid rgba(255,179,0,.35);padding:14px 16px;user-select:none}
+  #panel h1{font-size:14px;margin:0 0 8px;letter-spacing:.2em;color:#ffe082}
+  .row{display:flex;justify-content:space-between;gap:24px}
+  .ok{color:#8dff9a}.bad{color:#ff6d5a}.wait{color:#c9a46a}
+  #bench{margin-top:10px;white-space:pre;color:#ffe9c4}
+  button{margin-top:10px;background:#2a1a05;color:#ffe082;border:1px solid #ffb300;padding:4px 10px;font:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="panel">
+  <h1>VISION · PHASE 0 RUNTIME PROBE</h1>
+  <div id="checks"></div>
+  <button id="runBench">Run renderer benchmark (WebGL2 vs WebGPU)</button>
+  <div id="bench"></div>
+</div>
+<script type="module" src="./main.ts"></script>
+</body>
+</html>

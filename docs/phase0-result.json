@@ -1,0 +1,97 @@
+{
+  "url": "file:///home/user/orb/tools/phase0/index.html",
+  "probe": {
+    "checks": {
+      "console": {
+        "label": "Console errors",
+        "status": "ok",
+        "detail": "0"
+      },
+      "webgl2": {
+        "label": "WebGL2 context",
+        "status": "ok",
+        "detail": ""
+      },
+      "gpu": {
+        "label": "GPU",
+        "status": "ok",
+        "detail": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device "
+      },
+      "float": {
+        "label": "Half-float render targets",
+        "status": "ok",
+        "detail": ""
+      },
+      "asset": {
+        "label": "Local asset (img, relative path)",
+        "status": "ok",
+        "detail": "16x16"
+      },
+      "bloom": {
+        "label": "UnrealBloomPass",
+        "status": "ok",
+        "detail": "half-res"
+      },
+      "mouse": {
+        "label": "Mouse input (move/drag/wheel)",
+        "status": "ok",
+        "detail": "1 events, last=pointermove"
+      },
+      "visibility": {
+        "label": "Page Visibility API",
+        "status": "ok",
+        "detail": "visible"
+      },
+      "lively": {
+        "label": "Lively pause event",
+        "status": "ok",
+        "detail": "IsPaused=false"
+      },
+      "props": {
+        "label": "Lively property listener",
+        "status": "ok",
+        "detail": "probeToggle=true"
+      },
+      "anim": {
+        "label": "Animation loop",
+        "status": "ok",
+        "detail": "12.4 fps"
+      },
+      "ctx": {
+        "label": "WebGL context",
+        "status": "ok",
+        "detail": "live"
+      },
+      "fetch": {
+        "label": "fetch() of local JSON (informational)",
+        "status": "wait",
+        "detail": "blocked (file://) — not used"
+      },
+      "webgpu": {
+        "label": "WebGPU (informational)",
+        "status": "wait",
+        "detail": "no adapter"
+      }
+    },
+    "consoleErrors": 0,
+    "bench": null,
+    "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "webgpu": "no adapter",
+    "frames": 57,
+    "fps": 12.378594553418388,
+    "paused": false
+  },
+  "pause": {
+    "framesBefore": 33,
+    "framesDuringPause": 33,
+    "framesAfterPause": 33,
+    "framesResumed": 47,
+    "stoppedWhilePaused": true,
+    "resumed": true
+  },
+  "console": [
+    "error: Fetch API cannot load file:///home/user/orb/tools/phase0/LivelyInfo.json. URL scheme \"file\" is not supported.",
+    "info: WebGPU is experimental on this platform. See https://github.com/gpuweb/gpuweb/wiki/Implementation-Status#implementation-status",
+    "warning: Failed to create WebGPU Context Provider"
+  ]
+}

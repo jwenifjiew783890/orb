@@ -1,0 +1,22 @@
+{
+  "name": "vision-orb-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:wallpaper && npm run build:phase0",
+    "build:wallpaper": "vite build --mode wallpaper",
+    "build:phase0": "vite build --mode phase0",
+    "dev": "vite --mode wallpaper",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test ../tests/integration/"
+  },
+  "devDependencies": {
+    "@types/three": "^0.186.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.0"
+  },
+  "dependencies": {
+    "three": "^0.186.0"
+  }
+}

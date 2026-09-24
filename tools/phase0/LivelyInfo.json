@@ -1,0 +1,11 @@
+{
+  "AppVersion": "1.0.0.0",
+  "Title": "VISION Phase 0 Probe",
+  "Desc": "Runtime compatibility probe for VISION Orb: WebGL2, bloom, mouse, local assets, visibility and pause events, WebGPU availability and a renderer benchmark.",
+  "Author": "VISION Orb",
+  "License": "MIT",
+  "Contact": "",
+  "Type": 1,
+  "FileName": "index.html",
+  "Arguments": "--pause-event true"
+}
