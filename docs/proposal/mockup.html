@@ -1,0 +1,164 @@
+<!doctype html>
+<!--
+  VISION Desktop — interaction MOCKUP (not the implementation).
+  Background plates are real renders of the current orb (HUD hidden).
+  Overlays are static HTML/SVG to illustrate layout and states.
+  ?state=rest | awake | launch | search | menu
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>VISION Desktop mockup</title>
+<style>
+  :root { --a:#FFB300; --al:#FFE082; --hot:#FFF8E1; --cx:960px; --cy:502px; }
+  html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#020100;font-family:"Segoe UI",Bahnschrift,Arial,sans-serif}
+  #plate{position:absolute;inset:0;background-size:cover;transform-origin:960px 502px}
+  svg#links{position:absolute;inset:0}
+  .node{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:10px;transition:none}
+  .orbv{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;position:relative;
+    background:radial-gradient(circle at 50% 45%, rgba(255,179,0,.20), rgba(255,143,0,.05) 60%, rgba(0,0,0,0) 72%);
+    box-shadow:inset 0 0 0 1px rgba(255,200,90,.55), 0 0 18px rgba(255,160,20,.28)}
+  .orbv::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(255,200,90,.14)}
+  .orbv svg{width:30px;height:30px;stroke:var(--al);fill:none;stroke-width:1.4;filter:drop-shadow(0 0 4px rgba(255,179,0,.7))}
+  .lbl{font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,224,130,.82);text-shadow:0 0 8px rgba(255,160,0,.8);white-space:nowrap}
+  .kind{font-size:10px;letter-spacing:.3em;color:rgba(255,224,130,.45);text-transform:uppercase;margin-top:-6px}
+  .group .orbv{border-radius:18px;transform:rotate(45deg)} .group .orbv svg{transform:rotate(-45deg)}
+  .group .orbv::after{border-radius:22px}
+  .dim{opacity:.28} .dim .lbl,.dim .kind{opacity:0}
+  .sel .orbv{background:radial-gradient(circle, rgba(255,248,225,.75), rgba(255,179,0,.35) 55%, rgba(0,0,0,0) 74%);box-shadow:inset 0 0 0 2px #fff, 0 0 44px rgba(255,179,0,.95);transform:scale(1.16)}
+  .hov .orbv{transform:scale(1.1);box-shadow:inset 0 0 0 1.5px var(--al),0 0 30px rgba(255,170,20,.6)}
+  .child .orbv{width:48px;height:48px} .child .orbv svg{width:22px;height:22px} .child .lbl{font-size:11px}
+  .search{position:absolute;left:50%;top:948px;transform:translateX(-50%);width:560px;text-align:center}
+  .search .field{font-size:30px;font-weight:200;letter-spacing:.08em;color:var(--hot);padding:0 0 10px;border-bottom:1px solid rgba(255,200,90,.55);box-shadow:0 12px 20px -16px rgba(255,179,0,.9);text-shadow:0 0 12px rgba(255,179,0,.7)}
+  .search .caret{display:inline-block;width:1px;height:30px;background:var(--hot);vertical-align:-4px;margin-left:2px;box-shadow:0 0 6px #fff}
+  .search .hint{margin-top:12px;font-size:11px;letter-spacing:.3em;color:rgba(255,224,130,.45);text-transform:uppercase}
+  .menu{position:absolute}
+  .cursor{position:absolute;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:22px solid #fff;transform:rotate(-28deg);filter:drop-shadow(0 1px 2px #000)}
+  .tag{position:absolute;left:36px;bottom:30px;font:12px/1.5 Consolas,monospace;color:rgba(255,224,130,.55);letter-spacing:.12em}
+  .title{position:absolute;left:36px;top:30px;font-size:13px;letter-spacing:.4em;color:rgba(255,224,130,.6)}
+</style>
+</head>
+<body>
+<div id="plate"></div>
+<svg id="links" viewBox="0 0 1920 1080">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="pulse"><stop offset="0" stop-color="#fff"/><stop offset=".4" stop-color="#FFE082"/><stop offset="1" stop-color="#FFB300" stop-opacity="0"/></radialGradient>
+  </defs>
+  <g id="g"></g>
+</svg>
+<div id="ui"></div>
+<div class="title" id="title"></div>
+<div class="tag">MOCKUP · background = real render of current orb · overlays illustrative</div>
+<script>
+const CX = 960, CY = 502, RX = 640, RY = 330, ORB = 300;
+const G = {
+  browser:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+  steam:'<circle cx="16" cy="8" r="4"/><circle cx="8" cy="16" r="3"/><path d="M13 10l-3 4"/>',
+  files:'<path d="M3 7h6l2 2h10v10H3z"/>',
+  games:'<path d="M6 9h12a4 4 0 014 4v1a3 3 0 01-5 2l-2-2H9l-2 2a3 3 0 01-5-2v-1a4 4 0 014-4z"/><path d="M7 12v3M5.5 13.5h3"/>',
+  folder:'<path d="M3 7h6l2 2h10v10H3z"/><path d="M3 11h18"/>',
+  down:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  term:'<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M7 10l3 2-3 2M12 15h5"/>',
+  doc:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/>',
+  print:'<path d="M7 9V4h10v5M5 9h14v7H5zM8 14h8v6H8z"/>',
+  apps:'<rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/>',
+  search:'<circle cx="11" cy="11" r="6"/><path d="M16 16l5 5"/>',
+  brush:'<path d="M14 4l6 6-8 8-6-6z"/><path d="M6 12l-3 8 8-3"/>',
+  refresh:'<path d="M20 11a8 8 0 10-2 6"/><path d="M20 5v6h-6"/>',
+  power:'<path d="M12 3v9"/><path d="M6.3 6.8a8 8 0 1011.4 0"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+  moon:'<path d="M20 14A8 8 0 1110 4a6 6 0 0010 10z"/>',
+  link:'<path d="M10 14a4 4 0 006 0l3-3a4 4 0 00-6-6l-1 1M14 10a4 4 0 00-6 0l-3 3a4 4 0 006 6l1-1"/>',
+};
+const icon = (k) => `<svg viewBox="0 0 24 24">${G[k]}</svg>`;
+const state = new URLSearchParams(location.search).get('state') || 'awake';
+const ui = document.getElementById('ui'), g = document.getElementById('g');
+const titles = { rest:'A · REST — clean desktop, nodes asleep', awake:'B · AWAKE — pointer near the orb, "Games" group expanded', launch:'C · LAUNCH — node → energy → core → app opens', search:'D · SEARCH — Ctrl+Space or click orb, results bloom as nodes', menu:'E · EMPTY-SPACE MENU — radial, minimal' };
+document.getElementById('title').textContent = titles[state];
+document.getElementById('plate').style.backgroundImage = `url(${state === 'rest' || state === 'menu' ? 'plate-rest.jpg' : 'plate-awake.jpg'})`;
+if (state === 'search') document.getElementById('plate').style.transform = 'scale(1.07)';
+
+function pos(deg, rx = RX, ry = RY) { const a = deg * Math.PI / 180; return [CX + rx * Math.cos(a), CY + ry * Math.sin(a)]; }
+function link(x, y, { o = .35, w = .9, pulse = null, bend = .18, hot = false } = {}) {
+  const a = Math.atan2(y - CY, x - CX);
+  const sx = CX + Math.cos(a) * ORB, sy = CY + Math.sin(a) * ORB * .98;
+  const mx = (sx + x) / 2 - Math.sin(a) * 60 * bend * 5, my = (sy + y) / 2 + Math.cos(a) * 60 * bend * 5;
+  const d = `M${sx},${sy} Q${mx},${my} ${x},${y}`;
+  g.insertAdjacentHTML('beforeend', `<path d="${d}" stroke="${hot ? '#FFF8E1' : '#FFB300'}" stroke-opacity="${o}" stroke-width="${w}" fill="none" filter="url(#glow)"/>`);
+  if (pulse !== null) {
+    const t = pulse, px = (1-t)*(1-t)*sx + 2*(1-t)*t*mx + t*t*x, py = (1-t)*(1-t)*sy + 2*(1-t)*t*my + t*t*y;
+    g.insertAdjacentHTML('beforeend', `<circle cx="${px}" cy="${py}" r="${hot ? 14 : 7}" fill="url(#pulse)"/>`);
+  }
+}
+function node(x, y, glyph, label, kind = '', cls = '') {
+  ui.insertAdjacentHTML('beforeend', `<div class="node ${cls}" style="left:${x}px;top:${y}px"><div class="orbv">${icon(glyph)}</div><div class="lbl">${label}</div>${kind ? `<div class="kind">${kind}</div>` : ''}</div>`);
+}
+const pins = [
+  [212, 'browser', 'Chrome', 'app'], [328, 'steam', 'Steam', 'app'],
+  [180, 'files', 'Files', 'explorer'], [0, 'games', 'Games', 'group · 4', 'group'],
+  [146, 'folder', 'Work', 'folder'], [34, 'folder', 'Projects', 'folder'],
+  [240, 'term', 'Terminal', 'app'], [120, 'down', 'Downloads', 'folder'],
+];
+
+if (state === 'rest' || state === 'awake' || state === 'launch') {
+  for (const [deg, gl, lab, kind, extra] of pins) {
+    const [x, y] = pos(deg);
+    const isGames = lab === 'Games', isChrome = lab === 'Chrome';
+    const cls = [extra || '', state === 'rest' ? 'dim' : '', state === 'awake' && isGames ? 'hov' : '', state === 'launch' && isChrome ? 'sel' : ''].join(' ');
+    link(x, y, { o: state === 'rest' ? .1 : .32, pulse: state === 'awake' && (deg === 34 || deg === 212) ? .55 : null, hot: state === 'launch' && isChrome, w: state === 'launch' && isChrome ? 2.2 : .9 });
+    node(x, y, gl, lab, state === 'rest' ? '' : kind, cls);
+  }
+  if (state === 'launch') {
+    const [x, y] = pos(212);
+    for (const t of [.2, .35, .5]) link(x, y, { o: 0, pulse: t, hot: true });
+    ui.insertAdjacentHTML('beforeend', `<div class="cursor" style="left:${x+18}px;top:${y+12}px"></div>`);
+  }
+  if (state === 'awake') {
+    const [gx, gy] = pos(0);
+    const kids = [['games','Racing',-48],['games','Strategy',-8],['steam','Epic',32],['games','RPG',72]];
+    for (const [gl, lab, d] of kids) {
+      const a = d * Math.PI / 180, x = gx + 150 * Math.cos(a), y = gy + 150 * Math.sin(a);
+      g.insertAdjacentHTML('beforeend', `<path d="M${gx},${gy} L${x},${y}" stroke="#FFB300" stroke-opacity=".28" stroke-width=".8" filter="url(#glow)"/>`);
+      node(x, y, gl, lab, '', 'child');
+    }
+    ui.insertAdjacentHTML('beforeend', `<div class="cursor" style="left:${gx+8}px;top:${gy+18}px"></div>`);
+  }
+}
+
+if (state === 'search') {
+  const results = [
+    [212, 'folder', 'Projects', 'folder · D:\\Work', true], [246, 'doc', 'Project plan', 'file · .docx'],
+    [292, 'shield', 'Proton VPN', 'app'], [328, 'print', 'Printers', 'setting'],
+    [180, 'link', 'Project board', 'pinned url'],
+  ];
+  for (const [deg, gl, lab, kind, top] of results) {
+    const [x, y] = pos(deg, 620, 380);
+    link(x, y, { o: top ? .6 : .25, w: top ? 1.6 : .8, pulse: top ? .6 : null });
+    node(x, y, gl, lab, kind, top ? 'hov' : '');
+  }
+  ui.insertAdjacentHTML('beforeend', `<div class="search"><div class="field">pro<span class="caret"></span></div><div class="hint">enter open · tab next · ctrl+p pin · esc close</div></div>`);
+}
+
+if (state === 'menu') {
+  const mx = 1560, my = 700, R = 118;
+  const items = [['apps','Apps'],['files','Files'],['folder','Folders'],['power','Power'],['gear','Settings'],['brush','Personalize'],['refresh','Refresh'],['search','Search']];
+  g.insertAdjacentHTML('beforeend', `<circle cx="${mx}" cy="${my}" r="${R}" stroke="#FFB300" stroke-opacity=".35" fill="rgba(20,10,0,.35)" stroke-width="1" filter="url(#glow)"/><circle cx="${mx}" cy="${my}" r="46" stroke="#FFE082" stroke-opacity=".25" fill="none"/><circle cx="${mx}" cy="${my}" r="3" fill="#FFE082"/>`);
+  items.forEach(([gl, lab], i) => {
+    const a = (-90 + i * 45) * Math.PI / 180, x = mx + R * Math.cos(a), y = my + R * Math.sin(a);
+    const hot = lab === 'Power';
+    g.insertAdjacentHTML('beforeend', `<path d="M${mx + 50*Math.cos(a)},${my + 50*Math.sin(a)} L${mx + (R-30)*Math.cos(a)},${my + (R-30)*Math.sin(a)}" stroke="#FFB300" stroke-opacity="${hot?.8:.2}" stroke-width="${hot?1.6:.8}"/>`);
+    ui.insertAdjacentHTML('beforeend', `<div class="node child ${hot?'hov':''}" style="left:${x}px;top:${y}px"><div class="orbv">${icon(gl)}</div><div class="lbl">${lab}</div></div>`);
+  });
+  const pa = (-90 + 3 * 45) * Math.PI / 180, px = mx + R * Math.cos(pa), py = my + R * Math.sin(pa);
+  [['lock','Lock',-20],['moon','Sleep',25],['refresh','Restart',70],['power','Shut down',115]].forEach(([gl, lab, d]) => {
+    const a = d * Math.PI / 180, x = px + 130 * Math.cos(a), y = py + 130 * Math.sin(a);
+    ui.insertAdjacentHTML('beforeend', `<div class="node child" style="left:${x}px;top:${y}px"><div class="orbv">${icon(gl)}</div><div class="lbl">${lab}</div>${lab==='Shut down'?'<div class="kind">hold to confirm</div>':''}</div>`);
+  });
+  ui.insertAdjacentHTML('beforeend', `<div class="cursor" style="left:${px+4}px;top:${py+10}px"></div>`);
+}
+</script>
+</body>
+</html>
