@@ -46,7 +46,8 @@ func main() {
 		printPort   = flag.Bool("print-port", false, "print the configured port and exit")
 		checkApps   = flag.Bool("check-apps", false, "validate apps.json, print the result and exit")
 		version     = flag.Bool("version", false, "print version and exit")
-		probeHotkey = flag.Int("probe-hotkey", 0, "register Ctrl+Space and Ctrl+Alt+Space for N seconds, record presses to config/hotkey-probe.json, then exit")
+		probeHotkey = flag.Int("probe-hotkey", 0, "register Ctrl+Alt+Space (the default VISION shortcut) for N seconds, record presses to config/hotkey-probe.json, then exit")
+		probeCtrlSp = flag.Bool("probe-ctrl-space", false, "with --probe-hotkey: also test Ctrl+Space (opt-in; it is never registered by default)")
 		writeTokens multiFlag
 		clearTokens multiFlag
 	)
@@ -59,7 +60,7 @@ func main() {
 		return
 	}
 	if *probeHotkey > 0 {
-		exitOn(runHotkeyProbe(filepath.Dir(*cfgPath), *probeHotkey))
+		exitOn(runHotkeyProbe(filepath.Dir(*cfgPath), *probeHotkey, *probeCtrlSp))
 		return
 	}
 	if *initFlag {

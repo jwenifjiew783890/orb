@@ -36,7 +36,7 @@ type HotkeyPress struct {
 	ForegroundIsDesktop bool    `json:"foregroundIsDesktop"`
 }
 
-func runHotkeyProbe(cfgDir string, seconds int) error {
+func runHotkeyProbe(cfgDir string, seconds int, includeCtrlSpace bool) error {
 	if seconds < 5 {
 		seconds = 5
 	}
@@ -44,7 +44,7 @@ func runHotkeyProbe(cfgDir string, seconds int) error {
 		seconds = 600
 	}
 	res := HotkeyProbeResult{Kind: "vision-hotkey-probe", When: time.Now().Format(time.RFC3339), Seconds: seconds}
-	if err := hotkeyProbe(&res, time.Duration(seconds)*time.Second); err != nil {
+	if err := hotkeyProbe(&res, time.Duration(seconds)*time.Second, includeCtrlSpace); err != nil {
 		res.Note = err.Error()
 	}
 	out, _ := json.MarshalIndent(res, "", "  ")

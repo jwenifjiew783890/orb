@@ -551,8 +551,8 @@ func TestProbeReportEndpoint(t *testing.T) {
 		t.Fatalf("no token → %d", w.Code)
 	}
 	for body, want := range map[string]int{
-		`{"kind":"something-else"}`:                          400,
-		`not json`:                                            400,
+		`{"kind":"something-else"}`: 400,
+		`not json`:                  400,
 		`{"kind":"vision-desktop-probe","x":"` + strings.Repeat("a", 300<<10) + `"}`: 413,
 	} {
 		e.srv.general = newBucket(100, 100)
@@ -589,7 +589,7 @@ func TestPairingAllowsProbeFolderOnly(t *testing.T) {
 
 func TestHotkeyProbeWritesResult(t *testing.T) {
 	dir := t.TempDir()
-	if err := runHotkeyProbe(dir, 5); err != nil && runtime.GOOS == "windows" {
+	if err := runHotkeyProbe(dir, 5, false); err != nil && runtime.GOOS == "windows" {
 		t.Fatal(err)
 	}
 	data, err := os.ReadFile(filepath.Join(dir, "hotkey-probe.json"))

@@ -42,7 +42,7 @@ type winMsg struct {
 	Private uint32
 }
 
-func hotkeyProbe(res *HotkeyProbeResult, d time.Duration) error {
+func hotkeyProbe(res *HotkeyProbeResult, d time.Duration, includeCtrlSpace bool) error {
 	res.OS = "windows"
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -62,8 +62,16 @@ func hotkeyProbe(res *HotkeyProbeResult, d time.Duration) error {
 		name string
 		mods uintptr
 	}{
-		{1, "Ctrl+Space", modControl | modNoRepeat},
 		{2, "Ctrl+Alt+Space", modControl | modAlt | modNoRepeat},
+	}
+	// Ctrl+Space is only tested on explicit opt-in: registering it takes it away
+	// from IME switching and editors for the duration of the test.
+	if includeCtrlSpace {
+		combos = append(combos, struct {
+			id   int
+			name string
+			mods uintptr
+		}{1, "Ctrl+Space", modControl | modNoRepeat})
 	}
 	for _, c := range combos {
 		r, _, err := procRegisterHotKey.Call(0, uintptr(c.id), c.mods, vkSpace)

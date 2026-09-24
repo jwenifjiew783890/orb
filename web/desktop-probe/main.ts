@@ -37,6 +37,21 @@ window.addEventListener("pointermove", (e) => {
   lastMoveT = t;
   if (e.buttons & 1) inc("moveWithLeftDown");
 }, { passive: true });
+// press-and-hold measurement (the fallback gesture for the VISION menu)
+let holdStart = 0, holdX = 0, holdY = 0;
+const holds: { ms: number; movedPx: number }[] = [];
+window.addEventListener("pointerdown", (e) => { if (e.button === 0) { holdStart = performance.now(); holdX = e.clientX; holdY = e.clientY; } });
+window.addEventListener("pointerup", (e) => {
+  if (e.button !== 0 || !holdStart) return;
+  const ms = performance.now() - holdStart;
+  holdStart = 0;
+  if (ms >= 350) {
+    inc("hold");
+    holds.push({ ms: Math.round(ms), movedPx: Math.round(Math.hypot(e.clientX - holdX, e.clientY - holdY)) });
+    if (holds.length > 50) holds.shift();
+    note(`hold ${Math.round(ms)} ms`);
+  }
+});
 window.addEventListener("pointerdown", (e) => { inc(`down${e.button}`); note(`pointerdown button=${e.button} type=${e.pointerType} at ${e.clientX},${e.clientY}`); });
 window.addEventListener("pointerup", (e) => inc(`up${e.button}`));
 window.addEventListener("mousedown", (e) => inc(`mousedown${e.button}`));
@@ -109,6 +124,9 @@ const STEPS: Step[] = [
   { id: "drag", title: "Drag", rings: "AB", watch: ["moveWithLeftDown", "down0", "up0"], done: (d) => (d.moveWithLeftDown ?? 0) > 15,
     instr: "Press on ring A, drag to ring B, release.",
     question: { q: "Did Windows draw a blue selection rectangle while dragging?", options: ["No", "Yes"] } },
+  { id: "hold", title: "Press and hold", rings: "A", watch: ["hold", "down0", "up0"], done: (d) => (d.hold ?? 0) >= 3,
+    instr: "Press and HOLD the left button on ring A for about one second without moving, then release. Do it 3 times.",
+    question: { q: "Did Windows do anything during the hold (selection rectangle, menu, icon selected)?", options: ["No", "Yes"] } },
   { id: "wheel", title: "Mouse wheel", watch: ["wheel"], done: (d) => (d.wheel ?? 0) >= 3,
     instr: "Scroll the mouse wheel a few notches over empty desktop." },
   { id: "rightClick", title: "Right click (icons visible)", watch: ["down2", "up2", "contextmenu", "auxclick2", "mousedown2"],
@@ -240,7 +258,7 @@ async function done() {
     userAgent: navigator.userAgent, screen: `${screen.width}x${screen.height}`, dpr: devicePixelRatio, renderer,
     hasFocusRatio: hasFocusSamples ? +(hasFocusSamplesTrue / hasFocusSamples).toFixed(2) : null,
     frames, framesWhileLivelyPaused: framesWhilePaused, framesWhileHidden,
-    totals: c, steps: results, log: log.slice(-200),
+    totals: c, steps: results, holds, log: log.slice(-200),
   };
   const text = JSON.stringify(report, null, 1);
   try { localStorage.setItem("vision.desktopProbe", text); } catch { /* ignore */ }
@@ -267,6 +285,7 @@ function summarize(steps: typeof results): string {
     `mouse move            ${g("move", "move") > 0 ? "YES" : "NO"} (${steps.move?.moveHz ?? "?"} Hz)   over icons: ${g("hoverIcon", "move") > 0 ? "YES" : "NO"}`,
     `left click            ${g("leftClick", "click")} clicks   dblclick ${g("dblClick", "dblclick")} (Windows reacted: ${a("dblClick")})`,
     `drag                  ${g("drag", "moveWithLeftDown")} moves   (selection rectangle: ${a("drag")})`,
+    `press-and-hold        ${g("hold", "hold")} holds (Windows reacted: ${a("hold")})`,
     `wheel                 ${g("wheel", "wheel")}`,
     `right click (icons)   down2 ${g("rightClick", "down2")} contextmenu ${g("rightClick", "contextmenu")}   Windows menu: ${a("rightClick")}`,
     `right click (hidden)  down2 ${g("iconsHiddenRight", "down2")} contextmenu ${g("iconsHiddenRight", "contextmenu")}   Windows menu: ${a("iconsHiddenRight")}`,

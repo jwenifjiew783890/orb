@@ -192,7 +192,7 @@ docs/        screenshots, media, perf JSON, TEST_RESULTS, WINDOWS_TEST_PLAN
   `lib/orbScene.ts`. It carries over the layered-shell idea, drifting code text (now GPU
   "data glyphs"), dust, scan rings (now orbit rings), bloom plus chromatic aberration,
   and damped orbit controls. The rendering was rebuilt around a new neural filament
-  system. [DECISIONS.md §15](DECISIONS.md) lists what was kept and what was replaced.
+  system. [DECISIONS.md §16](DECISIONS.md) lists what was kept and what was replaced.
 - **4D simplex noise:** [webgl-noise](https://github.com/ashima/webgl-noise) by Ashima
   Arts and Stefan Gustavson, MIT.
 - **Libraries:** [three.js](https://threejs.org) (MIT), `golang.org/x/sys` (BSD-3).

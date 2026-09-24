@@ -39,7 +39,11 @@ test("guided steps record input and the report is saved by the helper", async ()
   // 5 drag
   await page.mouse.move(384, 533); await page.mouse.down(); await page.mouse.move(896, 533, { steps: 30 }); await page.mouse.up();
   await next();
-  // 6 wheel
+  // 6 press and hold
+  for (let i = 0; i < 3; i++) { await page.mouse.move(640, 533); await page.mouse.down(); await page.waitForTimeout(500); await page.mouse.up(); }
+  await page.click("#answers button.ans >> nth=0");
+  await next();
+  // 7 wheel
   for (let i = 0; i < 4; i++) await page.mouse.wheel(0, 100);
   await next();
   // 7 right click
@@ -49,7 +53,7 @@ test("guided steps record input and the report is saved by the helper", async ()
   await page.mouse.click(200, 650, { button: "middle" }); await next(); // 8
   await page.mouse.click(200, 650); await page.keyboard.type("vision"); await page.keyboard.press("Control+Space"); await next(); // 9
   await page.keyboard.type("vision"); await page.keyboard.press("Control+Space"); await page.click("#answers button.ans >> nth=1"); await next(); // 10
-  while ((await step()) < 18) await next();
+  while ((await page.$eval("#step", (e) => e.textContent)) !== "COMPLETE") await next();
   await page.waitForFunction(() => document.getElementById("step").textContent === "COMPLETE");
   const status = await page.$eval("#instr", (e) => e.textContent);
   assert.match(status, /Report saved/);
@@ -61,6 +65,8 @@ test("guided steps record input and the report is saved by the helper", async ()
   assert.equal(r.steps.leftClick.counters.click, 3);
   assert.ok(r.steps.dblClick.counters.dblclick >= 2);
   assert.ok(r.steps.drag.counters.moveWithLeftDown > 15);
+  assert.equal(r.steps.hold.counters.hold, 3);
+  assert.ok(r.holds.slice(-3).every((x) => x.ms >= 450 && x.movedPx === 0), JSON.stringify(r.holds));
   assert.equal(r.steps.rightClick.counters.contextmenu, 3);
   assert.equal(r.steps.rightClick.answer, "No, never");
   assert.equal(r.steps.keysMouseOnly.counters.ctrlSpace, 1);

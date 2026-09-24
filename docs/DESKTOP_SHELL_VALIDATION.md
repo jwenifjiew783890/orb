@@ -10,27 +10,40 @@ runs on the target PC. The desktop shell is not implemented until the results ar
    probe report endpoint and the shortcut test).
 2. PowerShell: `tools\windows\run-desktop-probe.ps1`, then follow it:
    - **Part 1** — add `tools\desktop-probe\index.html` to Lively, apply it, reload once
-     after pairing, and follow the 18 on-screen steps (answers by left click).
-   - **Part 2** — 90 s global-shortcut test: press Ctrl+Space on the desktop, in a
-     normal window, in a fullscreen game/video, and Ctrl+Alt+Space once.
+     after pairing, and follow the 19 on-screen steps (answers by left click).
+   - **Part 2** — 90 s global-shortcut test: press **Ctrl+Alt+Space** on the desktop, in a
+     normal window and in a fullscreen game/video. (Ctrl+Space is tested only with
+     `-IncludeCtrlSpace`.)
 3. Send the folder it prints: `tools\windows\results\desktop-shell-<time>\`
    (`environment.json`, `desktop-probe-report.json`, `hotkey-probe.json`).
    If the report can't reach the helper, the probe shows it on screen — photograph it.
 4. Re-apply VISION Orb in Lively.
+
+## Agreed input policy (owner decisions)
+
+- **Mouse-first.** Normal desktop use never requires the keyboard: click the orb for
+  navigation (and search), hover wakes nearby nodes, click nodes to launch, click
+  groups to open them.
+- **Global search shortcut: Ctrl+Alt+Space** (registered with `RegisterHotKey`).
+  **Ctrl+Space** is an optional, user-chosen setting and is **never registered by
+  default** (IME/input-method and application conflicts).
+- **Right-click** only if Lively delivers it reliably *and* Windows is not affected.
+- **No global keyboard or mouse hooks**, ever. Fallbacks must be non-invasive.
+- Nothing is marked "supported" unless it was tested inside Lively on Windows.
 
 ## What is measured
 
 | # | Capability | How |
 |---|---|---|
 | 1 | Pointer movement on empty desktop, over desktop icons; event rate (Hz) | `pointermove` counts/intervals |
-| 2 | Left click, double click, drag; whether Windows *also* reacts (selection rectangle, icon activation) | `pointerdown/up/click/dblclick` + your answers |
+| 2 | Left click, double click, drag, **press-and-hold** (the menu fallback); whether Windows *also* reacts (selection rectangle, icon activation) | `pointerdown/up/click/dblclick`, hold durations + your answers |
 | 3 | Mouse wheel, middle click | `wheel`, `pointerdown` button 1 |
 | 4 | **Right click** on empty desktop: delivered? does the Windows desktop menu also open? — with icons visible and hidden | `pointerdown` button 2, `contextmenu`, your answers |
 | 5 | **Keyboard**: Lively input = Mouse vs Keyboard; with desktop focused, with another window focused, with icons hidden; typed text and Ctrl+Space | `keydown` log |
 | 6 | **Focus**: does clicking the desktop deactivate the previous window; page focus/blur | focus/blur events, `document.hasFocus()` sampling, your answer |
 | 7 | **Desktop icons hidden**: do clicks/right-clicks/keys still reach the wallpaper | repeated steps |
 | 8 | **Maximized / fullscreen / game**: Lively pause events, page visibility, frames rendered while paused/hidden | `livelyWallpaperPlaybackChanged`, `visibilitychange`, rAF counter |
-| 9 | **Global shortcut**: can Ctrl+Space / Ctrl+Alt+Space be registered; which window was in front at each press; installed keyboard layouts | helper `--probe-hotkey` (`RegisterHotKey`) |
+| 9 | **Global shortcut**: can Ctrl+Alt+Space be registered (Ctrl+Space only on opt-in); which window was in front at each press; installed keyboard layouts | helper `--probe-hotkey` (`RegisterHotKey`) |
 | 10 | Lively Customise → property hook | `livelyPropertyListener` |
 
 `RegisterHotKey` is the standard per-application shortcut API. It is **not** an input
@@ -53,8 +66,8 @@ No hook of any kind is used in the probe or planned for the shell.
 |---|---|
 | Keys reach the wallpaper while the desktop is focused (Keyboard mode) | Search opens **in the wallpaper** from an orb click; typing works directly. |
 | Keys do not reach the wallpaper | Search runs in the helper's small **transparent, focusable search window** placed over the orb (same web UI, visually integrated). Opened by orb click (wallpaper asks helper) or the global shortcut. |
-| Global shortcut from other apps | Needs `RegisterHotKey` in the helper. **Registering a combo takes it away from every other app**, so the default must not break common software. Ctrl+Space is used by IME switching (e.g. Chinese/Japanese input), VS Code/IDE autocomplete and others. Proposed default: **Ctrl+Alt+Space**; Ctrl+Space available as an opt-in setting. If Lively forwards keys, Ctrl+Space also works *without registration* whenever the desktop itself is focused. |
-| Registration fails (combo already owned) | Show it in Personalize, fall back to the next combo; never force. |
+| Global shortcut from other apps | **Ctrl+Alt+Space** via `RegisterHotKey` (decided). Ctrl+Space only if the user selects it in Personalize. The shortcut is a convenience; search is always reachable from the orb. |
+| Ctrl+Alt+Space registration fails (owned by another app) | Personalize shows "shortcut unavailable" and offers other combos; never forced, never hooked. Orb search unaffected. |
 
 ### Clicks with desktop icons hidden
 | Result | Decision |
@@ -75,5 +88,19 @@ the user explicitly opens search.
 
 ## Results
 
-_To be filled from the probe output (table per capability: supported / partial / not
-supported, with the numbers), followed by the chosen fallback per row._
+**Not run yet.** No capability below has been tested inside Lively on Windows, so none
+is marked supported.
+
+| Capability | Status | Measured value | Chosen behaviour |
+|---|---|---|---|
+| Mouse move on empty desktop / over icons | Not tested | — | pending |
+| Left click / double click / drag | Not tested | — | pending |
+| Press-and-hold | Not tested | — | pending |
+| Wheel / middle click | Not tested | — | pending |
+| Right click (icons visible / hidden), Windows menu interference | Not tested | — | pending |
+| Keyboard: Mouse mode / Keyboard mode / other window focused / icons hidden | Not tested | — | pending |
+| Focus behaviour | Not tested | — | pending |
+| Clicks with desktop icons hidden | Not tested | — | pending |
+| Maximized / fullscreen / game pause | Not tested | — | pending |
+| Ctrl+Alt+Space registration and delivery | Not tested | — | pending |
+| Lively property hook | Not tested (headless only) | — | pending |

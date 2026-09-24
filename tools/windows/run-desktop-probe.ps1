@@ -7,8 +7,9 @@
   Part 1 - Lively wallpaper probe (tools\desktop-probe): a guided on-screen test
            of mouse, right-click, keyboard, focus, hidden desktop icons,
            maximized/fullscreen pause. Its report is saved by the helper.
-  Part 2 - Global shortcut test: the helper registers Ctrl+Space and
-           Ctrl+Alt+Space with RegisterHotKey (the normal Windows API for app
+  Part 2 - Global shortcut test: the helper registers Ctrl+Alt+Space (the
+           default VISION search shortcut; Ctrl+Space only with -IncludeCtrlSpace)
+           with RegisterHotKey (the normal Windows API for app
            shortcuts; NOT an input hook) for 90 seconds and records which
            window was in front at each press, plus installed keyboard layouts.
 
@@ -16,7 +17,7 @@
   Nothing is changed permanently. Re-apply the VISION Orb wallpaper afterwards.
 #>
 [CmdletBinding()]
-param([int]$HotkeySeconds = 90)
+param([int]$HotkeySeconds = 90, [switch]$IncludeCtrlSpace)
 
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path (Split-Path $PSScriptRoot)
@@ -72,7 +73,7 @@ if ($dirs.Count -lt 2) { Write-Host '   (The Lively library copy was not found; 
 
 Write-Host ''
 Write-Host '   4. Reload the probe so it picks up the pairing: in Lively pick another wallpaper, then "VISION Desktop Probe" again.'
-Write-Host '   5. Follow the on-screen steps on your desktop (18 steps, about 5 minutes).'
+Write-Host '   5. Follow the on-screen steps on your desktop (19 steps, about 5 minutes).'
 Write-Host '      Answer the questions with left clicks. The last screen says "Report saved".'
 $report = Join-Path $cfgDir 'desktop-probe-report.json'
 $startTime = Get-Date
@@ -89,13 +90,15 @@ if (Test-Path $report) { Copy-Item $report $outDir; Write-Host ' saved.' -Foregr
 
 # ---------------------------------------------------------------- part 2
 Step "Part 2 - Global shortcut test ($HotkeySeconds s)"
-Write-Host '   Put Lively Wallpaper Input back to what you prefer. During the next seconds press:'
-Write-Host '     a) Ctrl+Space with the DESKTOP focused (click empty desktop first)'
-Write-Host '     b) Ctrl+Space inside a normal window (Explorer, browser)'
-Write-Host '     c) Ctrl+Space inside a fullscreen game or video, if you can'
-Write-Host '     d) Ctrl+Alt+Space once anywhere'
+Write-Host '   Put Lively Wallpaper Input back to what you prefer. During the next seconds press Ctrl+Alt+Space:'
+Write-Host '     a) with the DESKTOP focused (click empty desktop first)'
+Write-Host '     b) inside a normal window (Explorer, browser)'
+Write-Host '     c) inside a fullscreen game or video, if you can'
+if ($IncludeCtrlSpace) { Write-Host '     d) and Ctrl+Space once in each of those places (opt-in test)' }
 Wait-Enter 'Ready to start the timer?'
-$p = Start-Process -FilePath $exe -ArgumentList @('--config', "`"$cfgPath`"", '--probe-hotkey', $HotkeySeconds) -PassThru
+$hkArgs = @('--config', "`"$cfgPath`"", '--probe-hotkey', $HotkeySeconds)
+if ($IncludeCtrlSpace) { $hkArgs += '--probe-ctrl-space' }
+$p = Start-Process -FilePath $exe -ArgumentList $hkArgs -PassThru
 Write-Host "   Recording for $HotkeySeconds s..."
 $p.WaitForExit()
 $hk = Join-Path $cfgDir 'hotkey-probe.json'

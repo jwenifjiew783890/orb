@@ -422,7 +422,25 @@ permanent cost against the ≤ 3% idle CPU target for a feature that's off by de
 **Benchmark:** **PENDING** on Windows. Run `perf-sample.ps1 -Label idle` with and without
 the feed enabled. If the difference is negligible, declare `--audio` by default.
 
-## 15. What was kept from the Sagar orb, and what was replaced
+## 15. Desktop input policy
+
+**Choice:** how users drive the VISION desktop.
+
+**Decision (owner):**
+
+- **Mouse-first.** The orb click opens navigation and search, hover wakes nodes,
+  clicking a node launches it, and clicking a group opens it. No keyboard shortcut is
+  required for normal use.
+- **Global search shortcut: Ctrl+Alt+Space**, registered with `RegisterHotKey`.
+- **Ctrl+Space is optional** and never registered by default. Registering it globally
+  would take it from IME/input-method switching and from editor autocomplete.
+- **Right-click** is used only if Lively delivers it reliably without affecting Windows.
+  Otherwise the fallbacks are the orb and press-and-hold.
+- **No global keyboard or mouse hooks.**
+
+**Evidence:** pending the Lively run. See `docs/DESKTOP_SHELL_VALIDATION.md`.
+
+## 16. What was kept from the Sagar orb, and what was replaced
 
 | Sagar orb (`lib/orbScene.ts`) | VISION Orb |
 |---|---|
