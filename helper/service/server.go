@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -135,6 +136,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		writeJSON(w, http.StatusOK, map[string]any{"apps": s.registry.Public()})
+	case r.URL.Path == "/diag/probe-report":
+		s.handleProbeReport(w, r)
 	case r.URL.Path == "/health":
 		writeJSON(w, http.StatusOK, map[string]any{"ok": true, "version": Version})
 	case r.URL.Path == "/launch" || strings.HasPrefix(r.URL.Path, "/launch/"):
@@ -276,3 +279,39 @@ func (b *bucket) take() bool {
 	b.tokens--
 	return true
 }
+
+// handleProbeReport stores the desktop-interaction probe's report at a fixed
+// path (config/desktop-probe-report.json). Nothing in the body is interpreted
+// beyond checking that it is a JSON object from the probe.
+func (s *Server) handleProbeReport(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		fail(w, http.StatusMethodNotAllowed, "method_not_allowed")
+		return
+	}
+	body, err := io.ReadAll(io.LimitReader(r.Body, maxProbeReport+1))
+	if err != nil || len(body) > maxProbeReport {
+		fail(w, http.StatusRequestEntityTooLarge, "malformed_request")
+		return
+	}
+	var head struct {
+		Kind string `json:"kind"`
+	}
+	if json.Unmarshal(body, &head) != nil || head.Kind != "vision-desktop-probe" {
+		fail(w, http.StatusBadRequest, "malformed_request")
+		return
+	}
+	var pretty bytes.Buffer
+	if json.Indent(&pretty, body, "", " ") != nil {
+		fail(w, http.StatusBadRequest, "malformed_request")
+		return
+	}
+	if err := writeFileAtomic(filepath.Join(s.cfg.dir, "desktop-probe-report.json"), pretty.Bytes(), 0o600); err != nil {
+		s.logger.Printf("probe report: %v", err)
+		fail(w, http.StatusInternalServerError, "write_failed")
+		return
+	}
+	s.logger.Printf("desktop probe report saved")
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "code": "saved"})
+}
+
+const maxProbeReport = 256 << 10

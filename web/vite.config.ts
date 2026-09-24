@@ -23,12 +23,19 @@ function classicScript(): Plugin {
 }
 
 export default defineConfig(({ mode }) => {
-  const target = mode === "phase0" ? "phase0" : "wallpaper";
-  const outDir = target === "phase0" ? resolve(__dirname, "../tools/phase0") : resolve(__dirname, "../wallpaper");
+  // Build targets: the wallpaper, the Phase 0 runtime probe, and the desktop-shell
+  // interaction probe. Each is a self-contained Lively wallpaper folder.
+  const targets = {
+    wallpaper: { root: ".", out: "../wallpaper", pub: "public-wallpaper" },
+    phase0: { root: "phase0", out: "../tools/phase0", pub: "public-phase0" },
+    probe: { root: "desktop-probe", out: "../tools/desktop-probe", pub: "public-desktop-probe" },
+  } as const;
+  const t = targets[(mode in targets ? mode : "wallpaper") as keyof typeof targets];
+  const outDir = resolve(__dirname, t.out);
   return {
-    root: resolve(__dirname, target === "phase0" ? "phase0" : "."),
+    root: resolve(__dirname, t.root),
     base: "./",
-    publicDir: resolve(__dirname, target === "phase0" ? "public-phase0" : "public-wallpaper"),
+    publicDir: resolve(__dirname, t.pub),
     plugins: [classicScript()],
     build: {
       outDir,

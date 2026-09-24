@@ -1,0 +1,11 @@
+{
+  "AppVersion": "1.0.0.0",
+  "Title": "VISION Desktop Probe",
+  "Desc": "Guided test of what Lively delivers to a web wallpaper: mouse, right-click, keyboard, focus, hidden desktop icons, pause. Writes a report for the VISION desktop-shell design.",
+  "Author": "VISION Orb contributors",
+  "License": "MIT",
+  "Contact": "",
+  "Type": 1,
+  "FileName": "index.html",
+  "Arguments": "--pause-event true"
+}

@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "npm run build:wallpaper && npm run build:phase0",
+    "build": "npm run build:wallpaper && npm run build:phase0 && npm run build:probe",
     "build:wallpaper": "vite build --mode wallpaper",
     "build:phase0": "vite build --mode phase0",
+    "build:probe": "vite build --mode probe",
     "dev": "vite --mode wallpaper",
     "typecheck": "tsc --noEmit",
     "test": "node --test ../tests/integration/"

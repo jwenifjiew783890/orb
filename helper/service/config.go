@@ -331,6 +331,9 @@ func loadIcon(iconsDir, name string) string {
 
 // ─── token.js for the wallpaper ──────────────────────────────────────────────
 
+// pairableTitles are the only wallpapers the helper will write token.js into.
+var pairableTitles = map[string]bool{"VISION Orb": true, "VISION Desktop Probe": true}
+
 // WriteTokenJS writes <dir>/token.js so the wallpaper can authenticate. It only
 // writes into a folder that is recognisably a VISION Orb wallpaper.
 func WriteTokenJS(dir string, c *Config, clear bool) error {
@@ -339,7 +342,7 @@ func WriteTokenJS(dir string, c *Config, clear bool) error {
 		return fmt.Errorf("%s is not a wallpaper folder (no LivelyInfo.json)", dir)
 	}
 	var li struct{ Title string }
-	if json.Unmarshal(stripBOM(info), &li) != nil || li.Title != "VISION Orb" {
+	if json.Unmarshal(stripBOM(info), &li) != nil || !pairableTitles[li.Title] {
 		return fmt.Errorf("%s is not the VISION Orb wallpaper", dir)
 	}
 	body := "window.VISION_HELPER = null;\n"

@@ -46,6 +46,7 @@ func main() {
 		printPort   = flag.Bool("print-port", false, "print the configured port and exit")
 		checkApps   = flag.Bool("check-apps", false, "validate apps.json, print the result and exit")
 		version     = flag.Bool("version", false, "print version and exit")
+		probeHotkey = flag.Int("probe-hotkey", 0, "register Ctrl+Space and Ctrl+Alt+Space for N seconds, record presses to config/hotkey-probe.json, then exit")
 		writeTokens multiFlag
 		clearTokens multiFlag
 	)
@@ -55,6 +56,10 @@ func main() {
 
 	if *version {
 		fmt.Println(Version)
+		return
+	}
+	if *probeHotkey > 0 {
+		exitOn(runHotkeyProbe(filepath.Dir(*cfgPath), *probeHotkey))
 		return
 	}
 	if *initFlag {

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>VISION Desktop Probe</title>
+<script src="./token.js"></script>
+<style>html,body{color:#ffe3a8;-webkit-user-select:none;user-select:none;background:#050302;height:100%;margin:0;font:15px/1.5 Segoe UI,Arial,sans-serif;overflow:hidden}#panel{background:#0e0802db;border:1px solid #ffb30059;width:min(760px,92vw);padding:22px 26px;position:fixed;top:7vh;left:50%;transform:translate(-50%)}h1{letter-spacing:.35em;color:#ffcf6a;margin:0 0 4px;font-size:13px;font-weight:600}#step{letter-spacing:.2em;color:#b9924c;margin-bottom:14px;font-size:12px}#title{color:#fff3d6;margin:0 0 8px;font-size:22px;font-weight:300}#instr{white-space:pre-line;color:#f3d9a4}#live{color:#cfe9c4;white-space:pre;margin-top:14px;font:13px/1.6 Consolas,monospace}.row{flex-wrap:wrap;gap:10px;margin-top:16px;display:flex}button{color:#ffe082;font:inherit;cursor:pointer;background:#241604;border:1px solid #ffb300;padding:8px 16px}button.ans{color:#d6f4ff;background:#06131a;border-color:#9ee6ff}button.sel{color:#1a0f00;background:#ffb300}.ring{letter-spacing:.2em;color:#ffcf6a;border:2px solid #ffb300;border-radius:50%;justify-content:center;align-items:center;width:90px;height:90px;font-size:12px;display:none;position:fixed;transform:translate(-50%,-50%);box-shadow:0 0 24px #ffb30080}.ring.hit{background:#ffb30040}#log{color:#ffe0a08c;white-space:pre;max-height:30vh;font:11px/1.4 Consolas,monospace;position:fixed;bottom:10px;left:12px;overflow:hidden}#report{color:#d6f4ff;white-space:pre-wrap;-webkit-user-select:text;user-select:text;background:#020a0e;max-height:38vh;margin-top:12px;padding:10px;font:11px/1.35 Consolas,monospace;display:none;overflow:auto}</style>
+  <script defer src="./js/vision.js"></script>
+</head>
+<body>
+<div id="panel">
+  <h1>VISION · DESKTOP INTERACTION PROBE</h1>
+  <div id="step"></div>
+  <div id="title"></div>
+  <div id="instr"></div>
+  <div class="row" id="answers"></div>
+  <div id="live"></div>
+  <div class="row"><button id="next">Next ›</button><button id="skip">Skip step</button></div>
+  <div id="report"></div>
+</div>
+<div class="ring" id="ringA">A</div>
+<div class="ring" id="ringB">B</div>
+<div id="log"></div>
+</body>
+</html>

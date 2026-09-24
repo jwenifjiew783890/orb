@@ -541,3 +541,59 @@ func TestHTTPServerBindsLoopbackOnly(t *testing.T) {
 		t.Fatal("timeouts/limits not set")
 	}
 }
+
+// ─── desktop probe support ───────────────────────────────────────────────────
+
+func TestProbeReportEndpoint(t *testing.T) {
+	e := newEnv(t)
+	tok := map[string]string{"X-Vision-Token": e.cfg.Token, "Origin": "null"}
+	if w := e.do(t, "POST", "/diag/probe-report", `{"kind":"vision-desktop-probe","steps":{}}`, nil); w.Code != 401 {
+		t.Fatalf("no token → %d", w.Code)
+	}
+	for body, want := range map[string]int{
+		`{"kind":"something-else"}`:                          400,
+		`not json`:                                            400,
+		`{"kind":"vision-desktop-probe","x":"` + strings.Repeat("a", 300<<10) + `"}`: 413,
+	} {
+		e.srv.general = newBucket(100, 100)
+		if w := e.do(t, "POST", "/diag/probe-report", body, tok); w.Code != want {
+			t.Errorf("body %.30q → %d, want %d", body, w.Code, want)
+		}
+	}
+	w := e.do(t, "POST", "/diag/probe-report", `{"kind":"vision-desktop-probe","steps":{"move":{"counters":{"move":80}}}}`, tok)
+	if w.Code != 200 {
+		t.Fatalf("valid report → %d %s", w.Code, w.Body.String())
+	}
+	data, err := os.ReadFile(filepath.Join(e.cfg.dir, "desktop-probe-report.json"))
+	if err != nil || !strings.Contains(string(data), `"move": 80`) {
+		t.Fatalf("report not written: %v %s", err, data)
+	}
+	if w := e.do(t, "GET", "/diag/probe-report", "", tok); w.Code != 405 {
+		t.Fatalf("GET → %d", w.Code)
+	}
+}
+
+func TestPairingAllowsProbeFolderOnly(t *testing.T) {
+	c := &Config{Port: 47821, Token: strings.Repeat("b", 64)}
+	probe := t.TempDir()
+	os.WriteFile(filepath.Join(probe, "LivelyInfo.json"), []byte(`{"Title":"VISION Desktop Probe"}`), 0o644)
+	if err := WriteTokenJS(probe, c, false); err != nil {
+		t.Fatal(err)
+	}
+	other := t.TempDir()
+	os.WriteFile(filepath.Join(other, "LivelyInfo.json"), []byte(`{"Title":"VISION Desktop Probe (copy)"}`), 0o644)
+	if WriteTokenJS(other, c, false) == nil {
+		t.Fatal("paired an unknown title")
+	}
+}
+
+func TestHotkeyProbeWritesResult(t *testing.T) {
+	dir := t.TempDir()
+	if err := runHotkeyProbe(dir, 5); err != nil && runtime.GOOS == "windows" {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(filepath.Join(dir, "hotkey-probe.json"))
+	if err != nil || !strings.Contains(string(data), `"kind": "vision-hotkey-probe"`) {
+		t.Fatalf("%v %s", err, data)
+	}
+}

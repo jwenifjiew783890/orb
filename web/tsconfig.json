@@ -11,5 +11,5 @@
     "skipLibCheck": true,
     "types": ["vite/client", "node"]
   },
-  "include": ["src", "phase0", "vite.config.ts"]
+  "include": ["src", "phase0", "desktop-probe", "vite.config.ts"]
 }

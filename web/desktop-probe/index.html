@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>VISION Desktop Probe</title>
+<script src="./token.js"></script>
+<style>
+  html,body{margin:0;height:100%;background:#050302;color:#ffe3a8;font:15px/1.5 "Segoe UI",Arial,sans-serif;overflow:hidden;user-select:none}
+  #panel{position:fixed;left:50%;top:7vh;transform:translateX(-50%);width:min(760px,92vw);background:rgba(14,8,2,.86);border:1px solid rgba(255,179,0,.35);padding:22px 26px}
+  h1{margin:0 0 4px;font-size:13px;letter-spacing:.35em;color:#ffcf6a;font-weight:600}
+  #step{font-size:12px;letter-spacing:.2em;color:#b9924c;margin-bottom:14px}
+  #title{font-size:22px;font-weight:300;margin:0 0 8px;color:#fff3d6}
+  #instr{white-space:pre-line;color:#f3d9a4}
+  #live{margin-top:14px;font:13px/1.6 Consolas,monospace;color:#cfe9c4;white-space:pre}
+  .row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  button{background:#241604;color:#ffe082;border:1px solid #ffb300;padding:8px 16px;font:inherit;cursor:pointer}
+  button.ans{border-color:#9ee6ff;color:#d6f4ff;background:#06131a}
+  button.sel{background:#ffb300;color:#1a0f00}
+  .ring{position:fixed;width:90px;height:90px;border-radius:50%;border:2px solid #ffb300;box-shadow:0 0 24px rgba(255,179,0,.5);transform:translate(-50%,-50%);display:none;align-items:center;justify-content:center;font-size:12px;letter-spacing:.2em;color:#ffcf6a}
+  .ring.hit{background:rgba(255,179,0,.25)}
+  #log{position:fixed;left:12px;bottom:10px;font:11px/1.4 Consolas,monospace;color:rgba(255,224,160,.55);white-space:pre;max-height:30vh;overflow:hidden}
+  #report{display:none;margin-top:12px;max-height:38vh;overflow:auto;font:11px/1.35 Consolas,monospace;color:#d6f4ff;background:#020a0e;padding:10px;white-space:pre-wrap;user-select:text}
+</style>
+</head>
+<body>
+<div id="panel">
+  <h1>VISION · DESKTOP INTERACTION PROBE</h1>
+  <div id="step"></div>
+  <div id="title"></div>
+  <div id="instr"></div>
+  <div class="row" id="answers"></div>
+  <div id="live"></div>
+  <div class="row"><button id="next">Next ›</button><button id="skip">Skip step</button></div>
+  <div id="report"></div>
+</div>
+<div class="ring" id="ringA">A</div>
+<div class="ring" id="ringB">B</div>
+<div id="log"></div>
+<script type="module" src="./main.ts"></script>
+</body>
+</html>
