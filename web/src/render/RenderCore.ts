@@ -120,6 +120,8 @@ export class RenderCore {
     this.camera.aspect = this.width / this.height;
     // keep the orb a similar screen fraction on portrait / ultrawide screens
     this.camera.fov = this.camera.aspect < 1 ? FOV / Math.max(0.6, this.camera.aspect) : FOV;
+    // Lift the orb slightly above centre so the bottom HUD never overlaps it.
+    this.camera.setViewOffset(this.width, this.height, 0, Math.round(this.height * 0.035), this.width, this.height);
     this.camera.updateProjectionMatrix();
     (this.final.uniforms.uRes.value as THREE.Vector2).set(this.width * dpr, this.height * dpr);
   }

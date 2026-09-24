@@ -43,7 +43,6 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           format: "iife",
-          inlineDynamicImports: true,
           entryFileNames: "js/vision.js",
           assetFileNames: "js/[name][extname]",
         },

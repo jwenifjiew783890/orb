@@ -104,4 +104,4 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export const ORB_RADIUS = 2.0;
-export const CAMERA_HOME = new THREE.Vector3(0, 0.4, 9.2);
+export const CAMERA_HOME = new THREE.Vector3(0, 0.4, 9.8);

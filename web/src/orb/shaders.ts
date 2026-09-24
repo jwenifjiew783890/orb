@@ -296,13 +296,14 @@ void main() {
   if (r > 1.0) discard;
   float a = atan(vUv.y, vUv.x);
   float br = uCoreBreath;
-  float hot = exp(-r * r * (170.0 - 60.0 * br));
+  float hot = exp(-r * r * (420.0 - 140.0 * br));
   float glow = exp(-r * (16.0 - 4.0 * br)) * 0.8 + exp(-r * 5.0) * 0.08;
   float wob = snoise(vec4(cos(a) * 1.5, sin(a) * 1.5, r * 1.5 - uTime * 0.3, uTime * 0.12));
   float spokes = pow(0.5 + 0.5 * sin(a * 36.0 + wob * 2.5), 18.0) * exp(-r * 4.0) * smoothstep(0.04, 0.18, r);
   float fine = pow(0.5 + 0.5 * sin(a * 110.0 + wob * 5.0 + uTime * 0.2), 40.0) * exp(-r * 6.0) * smoothstep(0.05, 0.2, r);
-  vec3 col = uColHot * hot * (7.0 + br * 4.0)
-           + palette(0.82) * glow * (1.1 + br * 0.9)
+  float halo2 = exp(-r * 26.0);
+  vec3 col = uColHot * (hot * (6.0 + br * 3.0) + halo2 * (0.9 + br * 0.6))
+           + palette(0.82) * glow * (0.8 + br * 0.7)
            + palette(0.7) * (spokes * 0.7 + fine * 0.45);
   float edge = smoothstep(1.0, 0.6, r);
   gl_FragColor = vec4(col * edge * uReveal * uCoreBoost, 1.0);
@@ -409,6 +410,7 @@ export const finalShader = {
       float v = smoothstep(1.15, 0.2, length(d * vec2(uRes.x / uRes.y, 1.0)));
       col *= mix(0.45, 1.0, v);
       col = toSRGB(col);
+      col = max(col - 0.012, 0.0) * 1.013; // black point: faint haze → true black
       float n = fract(sin(dot(vUv * uRes + uTime * 61.0, vec2(12.9898, 78.233))) * 43758.5453);
       col += (n - 0.5) * uGrain;
       gl_FragColor = vec4(col, 1.0);

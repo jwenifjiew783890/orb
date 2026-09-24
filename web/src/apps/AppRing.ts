@@ -16,9 +16,9 @@ import type { OrbSystem } from "../orb/OrbSystem";
 import * as S from "../orb/shaders";
 import type { AppInfo, HelperClient } from "../net/HelperClient";
 
-const RING_R = ORB_RADIUS * 1.5;
-const TILT_X = 1.18;
-const TILT_Z = 0.14;
+const RING_R = ORB_RADIUS * 1.62;
+const TILT_X = 0.38;
+const TILT_Z = -0.12;
 const BEAM_N = 56;
 const CACHE_KEY = "vision.apps.v1";
 
@@ -35,13 +35,16 @@ export interface AppRingCallbacks {
 const ringVert = /* glsl */ `
 uniform float uScale;
 uniform float uOpacity;
+uniform float uRingR;
 attribute float aB;
 varying float vA;
 varying float vHeat;
 void main() {
   vec4 mv = modelViewMatrix * vec4(position * uScale, 1.0);
   gl_Position = projectionMatrix * mv;
-  vA = aB * uOpacity;
+  vec3 c = (modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+  float depth = clamp((mv.z - c.z) / (uRingR * uScale + 1e-3), -1.0, 1.0);
+  vA = aB * uOpacity * mix(0.18, 1.0, smoothstep(-0.9, 0.35, depth)); // back half sits behind the orb
   vHeat = 0.55;
 }
 `;
@@ -132,7 +135,7 @@ export class AppRing {
     const common = { blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, depthTest: false };
     this.ringMat = new THREE.ShaderMaterial({
       vertexShader: ringVert, fragmentShader: S.ringFrag.replace("varying float vI;", "varying float vA;").replace("palette(vHeat) * vI", "palette(vHeat) * vA"),
-      uniforms: { ...orb.uniforms, uScale: { value: 0 }, uOpacity: { value: 0 } }, ...common,
+      uniforms: { ...orb.uniforms, uScale: { value: 0 }, uOpacity: { value: 0 }, uRingR: { value: RING_R } }, ...common,
     });
     this.ringLine = new THREE.LineSegments(g, this.ringMat);
     this.ringLine.frustumCulled = false;
@@ -212,7 +215,7 @@ export class AppRing {
       label.className = "app-label";
       label.textContent = app.label;
       el.append(icon, label);
-      const node: Node = { app, el, angle0: (i / list.length) * Math.PI * 2 - Math.PI / 2, emerge: 0, collapse: 0 };
+      const node: Node = { app, el, angle0: (i / list.length) * Math.PI * 2 + Math.PI / 2 /* first node at the front */, emerge: 0, collapse: 0 };
       el.addEventListener("click", (e) => { e.stopPropagation(); this.select(node); });
       el.addEventListener("pointerdown", (e) => e.stopPropagation());
       this.layer.appendChild(el);
